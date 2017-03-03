@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/animate.css">
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/jscolor.js"></script>
+    <style type="text/css">
+    .map-marker-label {
+        position: absolute;
+        font-weight: lighter;
+        font-size: 8px;
+        font-family: "Roboto Condensed", sans-serif;
+        color: #1589ff;
+    }
+
+    .flight-marker-label {
+        position: absolute;
+        font-weight: lighter;
+        font-size: 8px;
+        font-family: "Roboto Condensed", sans-serif;
+        color: red;
+    }
+    </style>
+</head>
+
+<body onload="loadRowNumber()">
+    <div id="wrapper">
+        <div id="map"></div>
+        <canvas id="route" width="1500" height="100;"></canvas>
+        <div id="flight_detail_box0" style="display:none;">
+            <div class="content">
+                <div class="section-heading" style="margin-top: 0px; text-align: center;">
+                    <span id="flight_detail_title"></span>
+                </div>
+            </div>
+        </div>
+        <div id="flight_detail_box1" style="display:none;">
+            <div class="content">
+                <div class="section-heading" style="margin-top: 0px;">
+                    <span>GROUP BY AIRLINES</span>
+                </div>
+                <div class="section-content">
+                    <div class="section-content-table">
+                        <span class="label" style="color:#6d6d6d;"><b>AIRLINE</b></span>
+                        <span class="text" style="color:#6d6d6d;"><b>DEP</b></span>
+                        <span class="text" style="color:#6d6d6d;margin-right:15px;"><b>ARR</b></span>
+                        <div class="clear" style="margin-bottom:3px;"></div>
+                        <span class="label">SQ</span>
+                        <span class="text">12</span>
+                        <span class="text" style="margin-right:19px;">48</span>
+                        <div class="clear"></div>
+                        <span class="label">VN</span>
+                        <span class="text">16</span>
+                        <span class="text" style="margin-right:19px;">25</span>
+                        <div class="clear"></div>
+                        <span class="label">EK</span>
+                        <span class="text">04</span>
+                        <span class="text" style="margin-right:19px;">38</span>
+                        <div class="clear"></div>
+                        <span class="label">MH</span>
+                        <span class="text">04</span>
+                        <span class="text" style="margin-right:19px;">30</span>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="flight_detail_box2" style="display:none;">
+            <div class="content">
+                <div class="section-heading" style="margin-top: 0px;">
+                    <span>GROUP BY TIME</span>
+                </div>
+                <div class="section-content">
+                    <div class="section-content-table">
+                        <span class="label" style="color:#6d6d6d;"><b>TIME</b></span>
+                        <span class="text" style="color:#6d6d6d;"><b>DEP</b></span>
+                        <span class="text" style="color:#6d6d6d;margin-right:15px;"><b>ARR</b></span>
+                        <div class="clear" style="margin-bottom:3px;"></div>
+                        <span class="label">0000-0559</span>
+                        <span class="text">21</span>
+                        <span class="text" style="margin-right:19px;">54</span>
+                        <div class="clear"></div>
+                        <span class="label">0600-1159</span>
+                        <span class="text">87</span>
+                        <span class="text" style="margin-right:19px;">25</span>
+                        <div class="clear"></div>
+                        <span class="label">1200-1759</span>
+                        <span class="text">67</span>
+                        <span class="text" style="margin-right:19px;">02</span>
+                        <div class="clear"></div>
+                        <span class="label">1800-2359</span>
+                        <span class="text">34</span>
+                        <span class="text" style="margin-right:19px;">75</span>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="sidebar">
+            <div class="logo">
+                <span class="atmri">ATMRI</span> Data Cleaner
+            </div>
+            <div class="content">
+                <div class="section-heading" style='display:none'>
+                    <span>LIVE TRAFFIC</span>
+                </div>
+                <div class="section-content" style="display:none;">
+                    <button style="font-family: 'Roboto Condensed', sans-serif;" onclick="startLivePlay();">Go</button>
+                </div>
+                <div class="section-heading" style='display:none'>
+                    <span>DISPLAY CONTROL</span>
+                </div>
+                <div class="section-content" style='display:none'>
+                    <div>
+                        Saturation: <span id="map-saturation">20</span>
+                        <input type="range" min="-100" max="100" value="20" onchange="setMapSaturation(this.value);" />
+                    </div>
+                    <div>
+                        Lightness: <span id="map-lightness">20</span>
+                        <input type="range" min="-100" max="100" value="20" onchange="setMapLightness(this.value);" />
+                    </div>
+                    <div>
+                        Line opacity: <span id="line-opacity">50</span>
+                        <input type="range" min="1" max="100" value="50" onchange="setLineOpacity(this.value);" />
+                    </div>
+                    <div>
+                        Line thickness: <span id="line-weight">1</span>
+                        <input type="range" min="0" max="3" value="1" onchange="setLineWeight(this.value);" />
+                    </div>
+                    <div>
+                        Line color:
+                        <input class="jscolor" value="000000" style="width:45px; border:2px solid white; padding: 3px;" onchange="setLineColor(this.jscolor);">
+                    </div>
+                </div>
+                <div class="section-heading" style='display:none'>
+                    <span>DATA FEATURES</span>
+                </div>
+                <div class="section-content" style='display:none'>
+                    <input type="checkbox" id="checkboxFlights" onclick="handleCheckboxFlights();" /> Scheduled flight
+                    <br>
+                    <input type="checkbox" id="checkboxAirports" onclick="handleCheckboxAirports();" /> Airport
+                    <br>
+                    <input type="checkbox" id="checkboxAirblocks" onclick="handleCheckboxAirblocks();" /> Airblock
+                    <br>
+                    <input type="checkbox" id="checkboxSegments" onclick="handleCheckboxSegments();" /> Route
+                    <br>
+                    <input type="checkbox" id="checkboxFixes" onclick="handleCheckboxFixes();" /> Fix
+                </div>
+                
+                <div class="section-heading">
+                    <span>DATASET TO USE</span>
+                </div>
+
+                <div class="section-content">
+                    <button style="font-family: 'Roboto Condensed', sans-serif;" onclick="writeFlightStatus('Yes')">Load</button>
+                    &nbsp;
+                    <button style="font-family: 'Roboto Condensed', sans-serif;" onclick="writeFlightStatus('No')">Save</button>
+                </div>
+
+                <div class="section-heading">
+                    <span>STEP THROUGH DATASET</span>
+                </div>
+                <div class="section-content">
+                    <span>Row: <span id='row_number' style='display:none'></span><input style='width:30px; margin-right: 5px' id='goto_row_number'></input></span>
+                    <br/>
+                    <br/>
+                    <button style="font-family: 'Roboto Condensed', sans-serif;" onclick="go();">Go</button>
+                    &nbsp;
+                    <input id='step_all_rows' type='button' style="font-family: 'Roboto Condensed', sans-serif;" value='Run'></input>
+                    <br/>
+                    <br/>
+                    <!--
+                    <span>Status: <span id='row_number'></span></span>
+                    <br/>
+                    <textarea rows="3" cols="17" readonly>
+                    </textarea>
+                    <br/>
+                    !-->
+                    <button style="font-family: 'Roboto Condensed', sans-serif;" onclick="prev();">Prev</button>
+                    &nbsp;
+                    <button style="font-family: 'Roboto Condensed', sans-serif;" onclick="next();">Next</button>
+                    &nbsp;
+                    <!--<button style="font-family: 'Roboto Condensed', sans-serif;" onclick="resetRowNumber();">Reset</button>!-->
+                    <button style="display:none;font-family: 'Roboto Condensed', sans-serif;" onclick="stopRecordPlay();">Stop</button>
+                    <span id="record-play-date" style="display: none;"></span>
+                    <span id="record-play-num-flights" style="display: none;"></span>
+
+                    <br/>
+                    <br/>
+                    <input id='restore_zoom_level' type='button' style="font-family: 'Roboto Condensed', sans-serif;" value='Reset zoom level'></input>
+                    <br/>
+                    <br/>
+                    
+                </div>
+
+                <div class="section-content" style='display:none;'>
+                    <span>Is the path correct?</span>
+                    <br/>
+                    <button style="font-family: 'Roboto Condensed', sans-serif;" onclick="writeFlightStatus('Yes')">Yes</button>
+                    &nbsp;
+                    <button style="font-family: 'Roboto Condensed', sans-serif;" onclick="writeFlightStatus('No')">No</button>
+                    <span id="record-play-date" style="display: none;"></span>
+                    <span id="record-play-num-flights" style="display: none;"></span>
+                </div>
+
+                <div class="section-heading" style='display:none'>
+                    <span>INTERACTIVE VIEW</span>
+                </div>
+                <div class="section-content" style='display:none'>
+                    <div>
+                        <input type="radio" name="flights-data" value="World" checked="checked" onclick="loadStandardAllFlightsAirportsJSONData();"> World &nbsp;&nbsp;&nbsp;
+                        <input type="radio" name="flights-data" value="Singapore" onclick="loadStandardSingFlightsAirportsJSONData();"> Singapore
+                    </div>
+                    <div style="margin-top:10px;">
+                        Number of flights: <span type="text" id="num-flights"></span>
+                        <div id="num-flights-slider-range" style="margin-top:5px;"></div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        Period: <span type="text" id="time-window"></span>
+                        <div id="time-window-slider-range" style="margin-top:5px;"></div>
+                    </div>
+                </div>
+                <div class="section-heading" style='display:none'>
+                    <span>AIRPORT DELAYS</span>
+                </div>
+                <div class="section-content" style="display:none;">
+                    <div class="section-content-table">
+                        <span class="label" style="color:#6d6d6d;"><b>AIRPORT</b></span>
+                        <span class="text" style="color:#6d6d6d;"><b>DEP</b></span>
+                        <span class="text" style="color:#6d6d6d;margin-right:15px;"><b>ARR</b></span>
+                        <div class="clear" style="margin-bottom:3px;"></div>
+                        <span class="label">Bogota(BOG)</span>
+                        <span class="text">1.2</span>
+                        <span class="text" style="margin-right:19px;">4.8</span>
+                        <div class="clear"></div>
+                        <span class="label">Moscow(SVO)</span>
+                        <span class="text">1.6</span>
+                        <span class="text" style="margin-right:19px;">2.5</span>
+                        <div class="clear"></div>
+                        <span class="label">Beijing(PEK)</span>
+                        <span class="text">0.4</span>
+                        <span class="text" style="margin-right:19px;">3.8</span>
+                        <div class="clear"></div>
+                        <span class="label">Bangkok(BKK)</span>
+                        <span class="text">0.4</span>
+                        <span class="text" style="margin-right:19px;">3.0</span>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div class="section-heading" style='display:none'>
+                    <span>AIRCRAFT</span>
+                </div>
+                <div class="section-content" style="display:none;">
+                    <div class="section-content-table">
+                        <span class="label" style="color:#6d6d6d;"><b>DATA SOURCE</b></span>
+                        <span class="text" style="color:#6d6d6d;"><b>GLOBAL</b></span>
+                        <span class="text" style="color:#6d6d6d;margin-right:10px;"><b>VIEW</b></span>
+                        <div class="clear" style="margin-bottom:3px;"></div>
+                        <span class="label">ADS-B</span>
+                        <span class="text">49</span>
+                        <span class="text" style="margin-right:37px;">7215</span>
+                        <div class="clear"></div>
+                        <span class="label">MLAT</span>
+                        <span class="text">9</span>
+                        <span class="text" style="margin-right:43px;">795</span>
+                        <div class="clear"></div>
+                        <span class="label">RADAR</span>
+                        <span class="text">0</span>
+                        <span class="text" style="margin-right:43px;">288</span>
+                        <div class="clear"></div>
+                        <span class="label">FLARM</span>
+                        <span class="text">0</span>
+                        <span class="text" style="margin-right:43px;">3</span>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div style="margin-top:10px;">
+                    &copy; ATMRI 2016
+                </div>
+            </div>
+        </div>
+    </div>
+    <script lang="javascript" src="js/simple-excel.js"></script>
+    <script lang="javascript" src="js-xlsx-master/dist/xlsx.full.min.js"></script>
+    <script lang="javascript" src="js/FileSaver.min.js"></script>
+    <script src="js/script.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCv5vH_0GbPRPeyC0uwofiFDuuJzkd5yDY&callback=initMap">
+    </script>
+</body>
+
+</html>
