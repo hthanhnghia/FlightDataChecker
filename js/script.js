@@ -715,36 +715,34 @@ function dataCheck(path)
     errors = []
     for(var i=0; i<path.length; i++)
     {
-        f = path[i];
+        p = path[i];
+        a = airport_codes.indexOf(f)
+        f = fix_codes.indexOf(f)
 
-        if(f.length < 2 || f.length > 5)
+        if(p.length < 2 || p.length > 5)
         {
             if(!(error_list[0] in errors))
-                errors[error_list[0]] = [f]
+                errors[error_list[0]] = [p]
 
             else
-                errors.push(f)
+                errors.push(p)
         }
 
-        if(/^[a-zA-Z0-9-]*$/.test(f) == false) {
+        if(/^[a-zA-Z0-9-]*$/.test(p) == false) {
             if(!(error_list[1] in errors))
-                errors[error_list[1]] = [f]
+                errors[error_list[1]] = [p]
 
             else
-                errors.push(f)
+                errors.push(p)
         }
 
-        for(var j = 0; j < all_airports.airports.length; j++)
+        if (i != 0 && i != path.length -1 && a != -1)
         {
-            if (f == all_airports.airports[j].code)
-            {
-                if(!(error_list[2] in errors))
-                    errors[error_list[2]] = [f]
+            if(!(error_list[2] in errors))
+                errors[error_list[2]] = [p]
 
-                else
-                    errors.push(f)
-                break;
-            }
+            else
+                errors.push(p)
         }
 
     }
