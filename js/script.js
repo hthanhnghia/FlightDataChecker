@@ -707,8 +707,17 @@ error_list = [
     "Fix/Airport(s) name contains forbidden characters",
     "Airport(s) found in the middle of fix list",
     "No field expected with blank value",
-    "Point(s) was NOT found"
+    "Point(s) was NOT found",
+    "Segment was not found"
 ]
+
+function addError(errors, index, e)
+{
+    if(!(error_list[index] in errors))
+        errors[error_list[index]] = [e]
+    else
+        errors.push(e)
+}
 
 function dataCheck(path)
 {
@@ -716,35 +725,20 @@ function dataCheck(path)
     for(var i=0; i<path.length; i++)
     {
         p = path[i];
-        a = airport_codes.indexOf(f)
-        f = fix_codes.indexOf(f)
+        a = airport_codes.indexOf(p)
+        f = fix_codes.indexOf(p)
 
         if(p.length < 2 || p.length > 5)
-        {
-            if(!(error_list[0] in errors))
-                errors[error_list[0]] = [p]
+            addError(errors, 0, p);
 
-            else
-                errors.push(p)
-        }
-
-        if(/^[a-zA-Z0-9-]*$/.test(p) == false) {
-            if(!(error_list[1] in errors))
-                errors[error_list[1]] = [p]
-
-            else
-                errors.push(p)
-        }
+        if(/^[a-zA-Z0-9-]*$/.test(p) == false)
+            addError(errors, 1, p);
 
         if (i != 0 && i != path.length -1 && a != -1)
-        {
-            if(!(error_list[2] in errors))
-                errors[error_list[2]] = [p]
+            addError(errors, 2, p);
 
-            else
-                errors.push(p)
-        }
-
+        if (a == -1 && f == -1)
+            addError(errors, 4, p);
     }
 }
 
@@ -755,12 +749,6 @@ function startRecordPlay() {
     deleteAirports();
     deleteSegments();
     deleteFixes();
-
-    //zoom = 6;
-    //map.setOptions({
-        //zoom: zoom,
-        //center: new google.maps.LatLng(1.350189, 103.994433)
-    //});
 
     var waypoints = {};
 
