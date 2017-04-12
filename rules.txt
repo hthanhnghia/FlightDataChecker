@@ -1,5 +1,0 @@
-Fix/Airport name must be between 2 to 5 characters
-Fix/Airport name contains forbidden characters (* . " / \ [ ] : ; | = ,)
-Airport found in the middle of fix list
-No field expected with blank value
-Point was NOT found

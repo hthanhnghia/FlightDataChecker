@@ -74,7 +74,7 @@ function initMap() {
     segmentInfoWindow = new google.maps.InfoWindow({});
     fixInfoWindow = new google.maps.InfoWindow({});
 
-    $.getJSON("js/standard_all_airports.json", function(data) {
+    $.getJSON("js/json/standard_all_airports.json", function(data) {
         loadStandardAllAirports(data);
 
         for (var i = 0; i < data.airports.length; i++) {
@@ -83,14 +83,14 @@ function initMap() {
         }
     });
 
-    $.getJSON("js/sectors.json", function(data) {
+    $.getJSON("js/json/sectors.json", function(data) {
         loadSectors(data);
         showAirblocks();
     });
-    $.getJSON("js/waypoints_airways_segments.json", function(data) {
+    $.getJSON("js/json/waypoints_airways_segments.json", function(data) {
         loadSegments(data);
     });
-    $.getJSON("js/waypoints_airways_fixes.json", function(data) {
+    $.getJSON("js/json/waypoints_airways_fixes.json", function(data) {
         loadFixes(data);
 
         for (var i = 0; i < data.fixes.length; i++) {
@@ -100,7 +100,7 @@ function initMap() {
     });
 
     $.ajax({
-        url : "output.txt",
+        url : "sample_error",
         dataType: "text",
         success : function (data) {
             sample_output = data.split('\n');
@@ -673,7 +673,7 @@ var all_airports = {};
 
 $.ajax({
     dataType: "json",
-    url: 'js/standard_all_airports(iaco).json',
+    url: 'js/json/standard_all_airports(iaco).json',
     async: false,
     success: function(data) {
         all_airports = data;
@@ -752,7 +752,7 @@ function startRecordPlay() {
 
     var waypoints = {};
 
-    $.getJSON('js/waypoints_airways_fixes.json', function(data) { 
+    $.getJSON('js/json/waypoints_airways_fixes.json', function(data) { 
         waypoints = data;
     });
     
